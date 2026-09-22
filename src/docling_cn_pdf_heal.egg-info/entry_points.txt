@@ -1,2 +1,0 @@
-[console_scripts]
-pdf-heal = docling_cn_pdf_heal.cli:main
