@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+benchmark/generated*/
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.mp4
+.DS_Store
