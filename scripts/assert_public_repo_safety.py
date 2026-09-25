@@ -17,10 +17,21 @@ class SafetyFinding:
     reason: str
 
 
+def _is_allowed_documentation_image(path: Path, root: Path) -> bool:
+    """Allow only PNG screenshots committed under docs/images."""
+    relative_path = path.relative_to(root)
+    return (
+        relative_path.parent == Path("docs/images")
+        and relative_path.suffix.casefold() == ".png"
+    )
+
+
 def find_unsafe_public_files(root: Path) -> list[SafetyFinding]:
     findings: list[SafetyFinding] = []
     for path in sorted(root.rglob("*")):
         if not path.is_file() or any(part in _IGNORED_PARTS for part in path.parts):
+            continue
+        if _is_allowed_documentation_image(path, root):
             continue
         if path.suffix.casefold() == ".pdf":
             findings.append(SafetyFinding(path, "pdf_binary_not_allowed"))
