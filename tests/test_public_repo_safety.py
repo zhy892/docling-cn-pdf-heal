@@ -21,6 +21,20 @@ class PublicRepoSafetyTests(unittest.TestCase):
             ("sample.pdf", "pdf_binary_not_allowed"),
         ])
 
+    def test_allows_png_assets_only_in_docs_images(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            image_dir = root / "docs" / "images"
+            image_dir.mkdir(parents=True)
 
+            (image_dir / "result.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+            (root / "other.png").write_bytes(b"\x89PNG\r\n\x1a\n")
+
+            findings = find_unsafe_public_files(root)
+
+        self.assertEqual(
+            [(finding.path.name, finding.reason) for finding in findings],
+            [("other.png", "non_utf8_file_not_allowed")],
+        )
 if __name__ == "__main__":
     unittest.main()
