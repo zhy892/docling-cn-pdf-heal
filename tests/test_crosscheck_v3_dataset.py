@@ -19,9 +19,9 @@ class CrosscheckV3DatasetTests(unittest.TestCase):
                 ],
                 check=True,
             )
-            layer = json.loads((output_dir / "text_layer.json").read_text())
-            ocr = json.loads((output_dir / "ocr_transcript.json").read_text())
-            labels = json.loads((output_dir / "labels.json").read_text())
+            layer = json.loads((output_dir / "text_layer.json").read_text(encoding="utf-8"))
+            ocr = json.loads((output_dir / "ocr_transcript.json").read_text(encoding="utf-8"))
+            labels = json.loads((output_dir / "labels.json").read_text(encoding="utf-8"))
 
         self.assertEqual(len(layer["pages"]), 8)
         self.assertEqual(layer["pages"], labels["pages"])
