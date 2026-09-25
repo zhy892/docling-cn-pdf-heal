@@ -100,3 +100,48 @@ OCR 回退需要本地安装 `pdftoppm`（Poppler）和 Tesseract；中文识别
 ## 许可证
 
 MIT。上游 Docling 及其模型、OCR 引擎和测试数据的许可条件须单独核验。
+## 结果与可复现性
+
+本仓库提供中文 PDF 选择性 OCR 流程的可复现实验证据。所有演示文件均为合成或脱敏文件，不包含个人文档或可识别信息。
+
+### 环境与验证
+
+<img src="docs/images/01_ocr_environment.png" alt="中文 OCR 环境验证" width="760">
+
+本地完整测试套件已通过，共 54 项测试。
+
+<img src="docs/images/02_local_tests_pass.png" alt="本地测试通过" width="760">
+
+GitHub Actions 持续集成同样通过。
+
+<img src="docs/images/03_github_actions_pass.png" alt="GitHub Actions 通过" width="760">
+
+### 选择性 OCR 工作流
+
+以下证据展示完整因果链：故障文本层 → 审计判定 → 选择性 OCR → 可读中文输出。
+
+**1. 注入故障后的文本层输入**
+
+<img src="docs/images/04_crosscheck_input.png" alt="故障文本层输入" width="760">
+
+**2. 跨 OCR 审计判定**
+
+审计发现第 2 页的文本层与 OCR 结果不一致，将其标记为需要复核，而不是直接采信不可靠的文本层。
+
+<img src="docs/images/05_crosscheck_decision.png" alt="跨 OCR 审计判定" width="760">
+
+**3. 选择性路由与 OCR 修复**
+
+仅异常候选页进入 OCR；空白页被跳过，正常页保留原始文本层。
+
+<img src="docs/images/06_selective_ocr_routing.png" alt="选择性 OCR 路由" width="760">
+
+<img src="docs/images/07_ocr_recovered_text.png" alt="OCR 修复后的可读中文" width="760">
+
+### 冻结合成测试集基准
+
+在留出的 synthetic-v2 测试集上，每种流程重复运行 3 次。选择性 OCR 仅处理 10 页中的 3 页；在该受控基准中，页面级检测的 Precision、Recall 和 F1 均为 1.0，正常页误报数为 0。选择性流程的中位运行时间为 2.959 秒，而全页 OCR 为 6.466 秒。
+
+<img src="docs/images/08_frozen_benchmark.png" alt="冻结合成测试集基准结果" width="760">
+
+> 说明：以上数据来自冻结的 synthetic-v2 合成测试集，用于说明该基准上的可复现性；不应解读为对任意真实 PDF 的普遍性能承诺。
