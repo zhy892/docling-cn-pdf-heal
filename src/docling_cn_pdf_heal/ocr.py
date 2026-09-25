@@ -44,6 +44,8 @@ def ocr_selected_pages(
                 check=False,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
             )
             if render.returncode:
                 detail = render.stderr.strip() or "unknown pdftoppm error"
@@ -67,6 +69,8 @@ def ocr_selected_pages(
                 check=False,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 timeout=options.timeout_seconds,
             )
             if completed.returncode:
