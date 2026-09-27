@@ -12,14 +12,19 @@ class PublicRepoSafetyTests(unittest.TestCase):
             (root / "safe.py").write_text("print('safe')\n", encoding="utf-8")
             (root / "data.json").write_text('{"pages": []}\n', encoding="utf-8")
             (root / "sample.pdf").write_bytes(b"%PDF-1.7\n")
-            (root / "bad.txt").write_text("token=ghp_" + "a" * 36, encoding="utf-8")
+            (root / "bad.txt").write_text(
+                "token=ghp_" + "a" * 36, encoding="utf-8"
+            )
 
             findings = find_unsafe_public_files(root)
 
-        self.assertEqual([(finding.path.name, finding.reason) for finding in findings], [
-            ("bad.txt", "github_token_pattern"),
-            ("sample.pdf", "pdf_binary_not_allowed"),
-        ])
+        self.assertEqual(
+            [(finding.path.name, finding.reason) for finding in findings],
+            [
+                ("bad.txt", "github_token_pattern"),
+                ("sample.pdf", "pdf_binary_not_allowed"),
+            ],
+        )
 
     def test_allows_png_assets_only_in_docs_images(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -36,5 +41,28 @@ class PublicRepoSafetyTests(unittest.TestCase):
             [(finding.path.name, finding.reason) for finding in findings],
             [("other.png", "non_utf8_file_not_allowed")],
         )
+
+    def test_allows_only_named_anonymized_user_trial_artifacts(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            trial_dir = root / "evidence" / "05_user_trials"
+            trial_dir.mkdir(parents=True)
+            for name in (
+                "U01_feedback.jpg",
+                "U02_feedback.jpg",
+                "U03_feedback.jpg",
+                "user_trial_summary.xlsx",
+            ):
+                (trial_dir / name).write_bytes(b"binary evidence")
+            (trial_dir / "other.jpg").write_bytes(b"binary evidence")
+
+            findings = find_unsafe_public_files(root)
+
+        self.assertEqual(
+            [(finding.path.name, finding.reason) for finding in findings],
+            [("other.jpg", "non_utf8_file_not_allowed")],
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
