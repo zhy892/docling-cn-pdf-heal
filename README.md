@@ -108,7 +108,7 @@ MIT。上游 Docling 及其模型、OCR 引擎和测试数据的许可条件须�
 
 <img src="docs/images/01_ocr_environment.png" alt="中文 OCR 环境验证" width="760">
 
-本地完整测试套件已通过，共 54 项测试。
+本地完整测试套件已通过，共 56 项测试。
 
 <img src="docs/images/02_local_tests_pass.png" alt="本地测试通过" width="760">
 
@@ -145,3 +145,6 @@ GitHub Actions 持续集成同样通过。
 <img src="docs/images/08_frozen_benchmark.png" alt="冻结合成测试集基准结果" width="760">
 
 > 说明：以上数据来自冻结的 synthetic-v2 合成测试集，用于说明该基准上的可复现性；不应解读为对任意真实 PDF 的普遍性能承诺。
+> ### 用户试用验证
+
+已完成 U01–U03 三位匿名试用者的流程验证。公开材料仅保留脱敏截图和汇总表，不含真实文件名、个人身份或原始用户文档。详见[匿名用户试用证据](evidence/05_user_trials/)。
