@@ -31,7 +31,6 @@ class PublicRepoSafetyTests(unittest.TestCase):
             root = Path(directory)
             image_dir = root / "docs" / "images"
             image_dir.mkdir(parents=True)
-
             (image_dir / "result.png").write_bytes(b"\x89PNG\r\n\x1a\n")
             (root / "other.png").write_bytes(b"\x89PNG\r\n\x1a\n")
 
@@ -53,8 +52,8 @@ class PublicRepoSafetyTests(unittest.TestCase):
                 "U03_feedback.jpg",
                 "user_trial_summary.xlsx",
             ):
-                (trial_dir / name).write_bytes(b"binary evidence")
-            (trial_dir / "other.jpg").write_bytes(b"binary evidence")
+                (trial_dir / name).write_bytes(b"\x89binary evidence")
+            (trial_dir / "other.jpg").write_bytes(b"\x89binary evidence")
 
             findings = find_unsafe_public_files(root)
 
