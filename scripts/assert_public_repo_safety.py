@@ -9,6 +9,12 @@ from pathlib import Path
 
 _TOKEN_RE = re.compile(r"\b(?:ghp|github_pat|sk)-[A-Za-z0-9_\-]{20,}\b|\bghp_[A-Za-z0-9]{20,}\b")
 _IGNORED_PARTS = {".git", ".venv", "__pycache__", ".pytest_cache"}
+_ALLOWED_USER_TRIAL_ARTIFACTS = {
+    Path("evidence/05_user_trials/U01_feedback.jpg"),
+    Path("evidence/05_user_trials/U02_feedback.jpg"),
+    Path("evidence/05_user_trials/U03_feedback.jpg"),
+    Path("evidence/05_user_trials/user_trial_summary.xlsx"),
+}
 
 
 @dataclass(frozen=True)
@@ -26,12 +32,19 @@ def _is_allowed_documentation_image(path: Path, root: Path) -> bool:
     )
 
 
+def _is_allowed_user_trial_artifact(path: Path, root: Path) -> bool:
+    """Allow only the reviewed, anonymized user-trial evidence files."""
+    return path.relative_to(root) in _ALLOWED_USER_TRIAL_ARTIFACTS
+
+
 def find_unsafe_public_files(root: Path) -> list[SafetyFinding]:
     findings: list[SafetyFinding] = []
     for path in sorted(root.rglob("*")):
         if not path.is_file() or any(part in _IGNORED_PARTS for part in path.parts):
             continue
         if _is_allowed_documentation_image(path, root):
+            continue
+        if _is_allowed_user_trial_artifact(path, root):
             continue
         if path.suffix.casefold() == ".pdf":
             findings.append(SafetyFinding(path, "pdf_binary_not_allowed"))
